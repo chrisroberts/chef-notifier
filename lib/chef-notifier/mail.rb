@@ -8,9 +8,9 @@ module ChefNotifier
 
     include Singleton
 
-    def initialize(args={})
-      args = {:delivery => {:method => :sendmail, :arguments => '-i'}}
-      @recipents = Array(args[:receipents])
+    def setup(args={})
+      args = {:delivery => {:method => :sendmail, :arguments => '-i'}}.merge(args)
+      @recipients = Array(args[:recipients])
       Mail.defaults do
         delivery_method args[:delivery][:method], :arguments => args[:delivery][:arguments]
       end
@@ -37,9 +37,10 @@ module ChefNotifier
     private
 
     def send_mail(message, subject=nil)
+      deliver_to = @recipients
       Mail.deliver do
         from "chef-client@#{Socket.gethostname}"
-        to @recipents
+        to deliver_to
         subject subject || "[Chef ERROR #{Socket.gethostname}]"
         body message
       end
