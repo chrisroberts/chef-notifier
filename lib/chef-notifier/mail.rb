@@ -34,7 +34,7 @@ module ChefNotifier
     private
 
     def send_mail(message, subject=nil)
-      if(@args[:recipients])
+      if(@args.respond_to?(:[]) && @args[:recipients])
         Pony.mail(
           :to => @args[:recipients],
           :subject => subject || "[Chef ERROR #{Socket.gethostname}]",
