@@ -10,7 +10,7 @@ module ChefNotifier
 
     def setup(args={})
       @args = {:delivery => {:method => :sendmail, :arguments => '-i'}}.merge(args)
-      @recipients = Array(@args[:recipients])
+      @recipients = @args[:recipients]
     end
 
     def report
@@ -34,8 +34,7 @@ module ChefNotifier
     private
 
     def send_mail(message, subject=nil)
-      deliver_to = @recipients
-      unless(Array(deliver_to).empty?)
+      if(@recipients)
         Pony.mail(
           :to => deliver_to,
           :subject => subject || "[Chef ERROR #{Socket.gethostname}]",
@@ -45,6 +44,8 @@ module ChefNotifier
             :arguments => @args[:delivery][:arguments]
           }
         )
+      else
+        Chef::Log.warn 'Failed to send notification email. No recipients found provided.'
       end
     end
 
