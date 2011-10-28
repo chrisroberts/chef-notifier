@@ -1,3 +1,6 @@
+=== v1.0.3
+* Check that @args is hash before using
+
 === v1.0.2
 * Return self on setup
 

@@ -13,5 +13,5 @@ module ChefNotifier
     end
   end
 
-  VERSION = Version.new('1.0.2')
+  VERSION = Version.new('1.0.3')
 end
