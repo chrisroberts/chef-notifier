@@ -1,7 +1,7 @@
 require 'chef'
 require 'chef/handler'
 require 'singleton'
-require 'mail'
+require 'pony'
 
 module ChefNotifier
   class Mailer < Chef::Handler
@@ -9,11 +9,8 @@ module ChefNotifier
     include Singleton
 
     def setup(args={})
-      args = {:delivery => {:method => :sendmail, :arguments => '-i'}}.merge(args)
-      @recipients = Array(args[:recipients])
-      Mail.defaults do
-        delivery_method args[:delivery][:method], :arguments => args[:delivery][:arguments]
-      end
+      @args = {:delivery => {:method => :sendmail, :arguments => '-i'}}.merge(args)
+      @recipients = Array(@args[:recipients])
     end
 
     def report
@@ -38,11 +35,16 @@ module ChefNotifier
 
     def send_mail(message, subject=nil)
       deliver_to = @recipients
-      Mail.deliver do
-        from "chef-client@#{Socket.gethostname}"
-        to deliver_to
-        subject subject || "[Chef ERROR #{Socket.gethostname}]"
-        body message
+      unless(Array(deliver_to).empty?)
+        Pony.mail(
+          :to => deliver_to,
+          :subject => subject || "[Chef ERROR #{Socket.gethostname}]",
+          :from => "chef-client@#{Socket.gethostname}",
+          :body => message,
+          :via_options => {
+            :arguments => @args[:delivery][:arguments]
+          }
+        )
       end
     end
 

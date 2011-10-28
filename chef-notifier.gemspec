@@ -10,6 +10,6 @@ Gem::Specification.new do |s|
   s.description = 'Notifications for Chef'
   s.require_path = 'lib'
   s.extra_rdoc_files = ['README.rdoc', 'CHANGELOG.rdoc']
-  s.add_dependency 'mail'
+  s.add_dependency 'pony'
   s.files = %w(LICENSE README.rdoc CHANGELOG.rdoc) + Dir.glob("**/*")
 end
