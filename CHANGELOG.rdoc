@@ -1,2 +1,5 @@
+=== v1.0.1
+* Use pony over mail to avoid conflicts
+
 === v1.0.0
 * Initial release
