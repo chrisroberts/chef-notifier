@@ -1,0 +1,45 @@
+== Chef Notifier
+
+Notifications from chef. Currently only notification via mail.
+
+=== Basic usage
+
+require 'chef-notifier/mail'
+
+Chef::Config.exception_handlers << ChefNotifier::Mailer.instance.setup(:recipients => ['some_email@example.com'])
+
+=== Extra fun
+
+The mailer has logger type methods available. This is to provide notifications from chef
+based on encountered states. The mailer is a singleton, which allows a recipe to determine
+what users should receive mail notifications (via user databags most likely). Once setup,
+other cookbook recipes can then include the recipe and use the methods for easy reporting.
+
+==== Example (using user databags):
+
+  include_recipe 'ssmtp'
+
+  notifier_gem = gem_package 'chef-notifier' do
+    action :nothing
+    version '~> 1.0'
+  end
+  notifier_gem.run_action(:install)
+  Gem.clear_paths
+  require 'rubygems'
+  require 'chef-notifier/mail'
+
+  if(File.exists?('/usr/sbin/sendmail'))
+    users = search(:users).find_all{|user| user['chef_notifications']}.map{|user| user[:email]}.compact
+    notifier = ChefNotifier::Mailer.instance.setup(
+      :recipients => users,
+      :delivery => {
+        :method => :sendmail,
+        :arguments => '-i'
+      }
+    )
+    Chef::Config.exception_handlers << ChefNotifier::Mailer.instance
+    Chef::Log.info "Emails added to notifications: #{users.join(', ')}"
+  else
+    Chef::Log.warn "No emails found for notifications"
+  end
+

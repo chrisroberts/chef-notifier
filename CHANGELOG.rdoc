@@ -1,3 +1,6 @@
+=== v1.0.2
+* Return self on setup
+
 === v1.0.1
 * Use pony over mail to avoid conflicts
 

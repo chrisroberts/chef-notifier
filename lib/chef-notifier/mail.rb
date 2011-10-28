@@ -10,6 +10,7 @@ module ChefNotifier
 
     def setup(args={})
       @args = {:delivery => {:method => :sendmail, :arguments => '-i'}}.merge(args)
+      self
     end
 
     def report
