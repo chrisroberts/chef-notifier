@@ -10,7 +10,6 @@ module ChefNotifier
 
     def setup(args={})
       @args = {:delivery => {:method => :sendmail, :arguments => '-i'}}.merge(args)
-      @recipients = @args[:recipients]
     end
 
     def report
@@ -34,9 +33,9 @@ module ChefNotifier
     private
 
     def send_mail(message, subject=nil)
-      if(@recipients)
+      if(@args[:recipients])
         Pony.mail(
-          :to => deliver_to,
+          :to => @args[:recipients],
           :subject => subject || "[Chef ERROR #{Socket.gethostname}]",
           :from => "chef-client@#{Socket.gethostname}",
           :body => message,
